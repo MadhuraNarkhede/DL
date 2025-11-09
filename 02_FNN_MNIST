@@ -1,0 +1,62 @@
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.datasets import mnist
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Load and Preprocess the MNIST Dataset
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Normalize pixel values from 0-255 to 0.0-1.0
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+
+# 2. Define the FNN Model Architecture
+model = Sequential([
+    Flatten(input_shape=(28, 28)),
+    Dense(128, activation='relu'),
+    Dense(64, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# 3. Compile the Model
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# 4. Train the Model
+print("--- Training the model ---")
+model.fit(
+    x_train, 
+    y_train, 
+    epochs=5,
+    validation_split=0.1, # Use 10% of training data for validation
+    verbose=1
+)
+
+# 5. Evaluate the Model's Overall Accuracy
+print("\n--- Evaluating on test data ---")
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+print(f"\nOverall Test accuracy: {test_acc}%")
+
+# 6. Test and Display 10 Sample Predictions
+print("\n--- Displaying individual predictions ---")
+
+index = 100
+
+# Get prediction for that one image
+prediction = model.predict(x_test[index].reshape(1, 28, 28))  # Reshape because model expects batch input
+predicted_label = np.argmax(prediction)
+
+# Actual label
+actual_label = y_test[index]
+
+# Display the image with prediction
+plt.figure(figsize=(3, 3))
+plt.imshow(x_test[index], cmap='autumn')
+plt.title(f"Predicted: {predicted_label}\nActual: {actual_label}")
+plt.axis('off')
+plt.show()
