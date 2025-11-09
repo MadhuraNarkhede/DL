@@ -1,0 +1,45 @@
+import tensorflow as tf
+import numpy as np
+
+# Training data (now NumPy arrays, not lists)
+X = np.array([[1.0], [2.0], [3.0]], dtype=float)
+y = np.array([[3.0], [5.0], [7.0]], dtype=float)
+
+# Simple model
+model = tf.keras.Sequential([tf.keras.layers.Dense(1)])
+model.compile(optimizer='sgd', loss='mse')
+model.fit(X, y, epochs=100, verbose=0)
+
+# Test
+print("Prediction for x=4:", model.predict(np.array([[4.0]]))[0][0])
+
+
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# Set seed for consistent results
+torch.manual_seed(0)
+
+# Training data: y = 2x + 1
+X = torch.tensor([[1.0], [2.0], [3.0]])
+y = torch.tensor([[3.0], [5.0], [7.0]])
+
+# Define simple linear model
+model = nn.Linear(1, 1)
+
+# Define optimizer
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+# Train the model
+for _ in range(200):
+    prediction = model(X)
+    loss = ((prediction - y) ** 2).mean()   # Mean Squared Error
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+# Test
+test = torch.tensor([[4.0]])
+print("Prediction for x=4:", model(test).item())
