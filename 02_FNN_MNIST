@@ -40,23 +40,29 @@ model.fit(
 # 5. Evaluate the Model's Overall Accuracy
 print("\n--- Evaluating on test data ---")
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
-print(f"\nOverall Test accuracy: {test_acc}%")
+print(f"\nOverall Test accuracy: {test_acc*100:.2f}%")
 
 # 6. Test and Display 10 Sample Predictions
 print("\n--- Displaying individual predictions ---")
 
-index = 100
+# Get predictions for just the first 10 images in the test set
+predictions = model.predict(x_test[:10])
+predicted_labels = np.argmax(predictions, axis=1)
 
-# Get prediction for that one image
-prediction = model.predict(x_test[index].reshape(1, 28, 28))  # Reshape because model expects batch input
-predicted_label = np.argmax(prediction)
+# Get the actual labels for those 10 images
+actual_labels = y_test[:10]
 
-# Actual label
-actual_label = y_test[index]
-
-# Display the image with prediction
-plt.figure(figsize=(3, 3))
-plt.imshow(x_test[index], cmap='autumn')
-plt.title(f"Predicted: {predicted_label}\nActual: {actual_label}")
-plt.axis('off')
-plt.show()
+# Set up a 2x5 grid to display the images
+plt.figure(figsize=(10, 5))
+for i in range(10):
+    # Create a subplot
+    plt.subplot(2, 5, i + 1)
+    
+    # Display the test image
+    plt.imshow(x_test[i], cmap='gray')
+    
+    # Set the title with the prediction and the actual label
+    plt.title(f"Pred: {predicted_labels[i]}\nActual: {actual_labels[i]}")
+    
+    # Hide the axes
+    plt.axis('off')
